@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Task Manager</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📚 Student Task Manager</h1>
+
+<div class="input-box">
+
+<label for="taskInput">Task:</label>
+<input type="text" id="taskInput" placeholder="Enter Task" autocomplete="off">
+
+<label for="deadline">Deadline:</label>
+<input type="date" id="deadline">
+
+<label for="taskTime">Time:</label>
+<input type="time" id="taskTime">
+
+<button onclick="addTask()">Add Task</button>
+
+</div>
+
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Deadline</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="taskTable"></tbody>
+
+</table>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
