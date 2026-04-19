@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +12,12 @@
 <div class="container">
 
 <h1>📚 Student Task Manager</h1>
+<h3 id="taskCount">Total Tasks: 0</h3>
 
 <div class="input-box">
 
 <label for="taskInput">Task:</label>
-<input type="text" id="taskInput" placeholder="Enter Task" autocomplete="off">
+<input type="text" id="taskInput" placeholder="Enter Task">
 
 <label for="deadline">Deadline:</label>
 <input type="date" id="deadline">
@@ -25,15 +25,28 @@
 <label for="taskTime">Time:</label>
 <input type="time" id="taskTime">
 
-<button onclick="addTask()">Add Task</button>
+<label for="priority">Priority:</label>
+<select id="priority">
+<option value="Low">Low</option>
+<option value="Medium">Medium</option>
+<option value="High">High</option>
+</select>
+
+<button type="button" onclick="addTask()">Add Task</button>
+<button type="button" onclick="clearAll()" class="clear-btn">Clear All</button>
 
 </div>
 
 <table>
+
 <thead>
 <tr>
+<th>No.</th>
 <th>Task</th>
 <th>Deadline</th>
+<th>Priority</th>
+<th>Countdown</th>
+<th>Status</th>
 <th>Action</th>
 </tr>
 </thead>
@@ -45,6 +58,5 @@
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
