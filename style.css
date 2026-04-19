@@ -1,66 +1,161 @@
-body{
-    font-family: Arial;
-    background: linear-gradient(135deg,#74ebd5,#acb6e5);
+/* 🌈 BODY BACKGROUND */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #6dd5ed, #2193b0);
 }
 
-.container{
-    width:800px;
-    margin:60px auto;
-    background:white;
-    padding:30px;
-    border-radius:15px;
-    text-align:center;
+/* 📦 MAIN CONTAINER */
+.container {
+  width: 80%;
+  margin: 50px auto;
+  background: #f0f0f0;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  position: relative;
 }
 
-input, select{
-    padding:8px;
-    margin:5px;
+/* 📝 INPUT SECTION */
+.input-box {
+  margin: 20px 0;
 }
 
-button{
-    padding:8px 14px;
-    background:#007bff;
-    color:white;
-    border:none;
-    border-radius:6px;
+input, select {
+  padding: 5px;
+  margin: 5px;
 }
 
-.clear-btn{
-    background:red;
+/* 🔘 BUTTONS */
+button {
+  padding: 6px 12px;
+  margin: 5px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
 }
 
-table{
-    width:100%;
-    margin-top:20px;
-    border-collapse: collapse;
+/* 🔵 ADD BUTTON */
+button:first-of-type {
+  background-color: #007bff;
+  color: white;
 }
 
-th,td{
-    border:1px solid #ddd;
-    padding:10px;
+/* 🔴 CLEAR BUTTON */
+.clear-btn {
+  background-color: red;
+  color: white;
 }
 
-/* Priority Colors */
-.high{ color:red; font-weight:bold; }
-.medium{ color:orange; font-weight:bold; }
-.low{ color:green; font-weight:bold; }
-
-.completed{
-    text-decoration: line-through;
-    color:gray;
+/* 📊 TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-/* Responsive */
-@media (max-width:768px){
-.container{ width:90%; }
-input, select, button{ width:100%; }
+th, td {
+  padding: 10px;
+  border: 1px solid #ccc;
 }
 
-@media (max-width:480px){
-.container{ width:95%; }
-table{
-    display:block;
-    overflow-x:auto;
-    white-space:nowrap;
+th {
+  background-color: #ddd;
 }
+
+/* ✔ COMPLETED TASK */
+.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+
+/* 🎯 PRIORITY COLORS */
+.high {
+  color: red;
+  font-weight: bold;
+}
+
+.medium {
+  color: orange;
+  font-weight: bold;
+}
+
+.low {
+  color: green;
+  font-weight: bold;
+}
+
+/* 🌙 DARK MODE BUTTON */
+.dark-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  border: none;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #ddd;
+}
+
+/* 🌙 DARK MODE */
+.dark {
+  background: #121212;
+  color: white;
+}
+
+.dark .container {
+  background: #1e1e1e;
+}
+
+.dark table {
+  color: white;
+}
+
+.dark th {
+  background: #333;
+}
+
+.dark td {
+  border-color: #555;
+}
+
+/* 🔥 TOAST NOTIFICATIONS */
+#toastContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+}
+
+.toast {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  color: #333;
+  background: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  animation: slideIn 0.3s ease;
+}
+
+/* TYPES */
+.toast.success {
+  border-left: 5px solid green;
+}
+
+.toast.error {
+  border-left: 5px solid red;
+}
+
+.toast.reminder {
+  border-left: 5px solid orange;
+}
+
+/* 🎬 ANIMATION */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }

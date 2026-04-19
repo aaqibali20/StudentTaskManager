@@ -11,6 +11,9 @@
 
 <div class="container">
 
+<!-- 🌙 Dark Mode Button (small add only) -->
+<button class="dark-btn" onclick="toggleDarkMode()">🌙</button>
+
 <h1>📚 Student Task Manager</h1>
 <h3 id="taskCount">Total Tasks: 0</h3>
 
@@ -38,7 +41,6 @@
 </div>
 
 <table>
-
 <thead>
 <tr>
 <th>No.</th>
@@ -50,14 +52,14 @@
 <th>Action</th>
 </tr>
 </thead>
-
 <tbody id="taskTable"></tbody>
-
 </table>
 
 </div>
 
-<!--  IMPORTANT CHANGE: module type added -->
+<!--  Toast -->
+<div id="toastContainer"></div>
+
 <script type="module" src="script.js"></script>
 
 </body>

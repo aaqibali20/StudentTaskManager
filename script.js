@@ -1,4 +1,37 @@
-//  Firebase Setup
+// 🔥 Toast
+function showToast(msg, type="success"){
+  let box = document.getElementById("toastContainer");
+
+  let div = document.createElement("div");
+  div.className = `toast ${type}`;
+  div.innerText = msg;
+
+  box.appendChild(div);
+
+  setTimeout(()=>div.remove(),10000); // 10 sec
+}
+
+// 🌙 Dark Mode
+function toggleDarkMode(){
+  document.body.classList.toggle("dark");
+}
+window.toggleDarkMode = toggleDarkMode;
+
+// 🕒 TIME FORMAT (AM/PM)
+function formatTime(time){
+  let [hour, minute] = time.split(":");
+
+  hour = parseInt(hour);
+
+  let ampm = hour >= 12 ? "PM" : "AM";
+  hour = hour % 12;
+  hour = hour ? hour : 12;
+
+  return `${hour}:${minute} ${ampm}`;
+}
+
+
+// 🔥 Firebase Setup
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import {
   getFirestore,
@@ -25,75 +58,71 @@ const db = getFirestore(app);
 
 let tasks = [];
 
-//  Page Load
+// 🚀 LOAD
 window.onload = () => {
   loadTasks();
-  setInterval(updateCountdown, 1000);
-  setInterval(checkReminder, 60000);
+  setInterval(updateCountdown,1000);
+  setInterval(checkReminder,60000);
 };
 
 // ➕ ADD TASK
-async function addTask() {
+async function addTask(){
   let task = document.getElementById("taskInput").value;
   let date = document.getElementById("deadline").value;
   let time = document.getElementById("taskTime").value;
   let priority = document.getElementById("priority").value;
 
-  if (task === "") {
-    alert("Enter task");
+  if(task===""){
+    showToast("Enter task","error");
     return;
   }
 
-  if (!date || !time) {
-    alert("Select date & time");
+  if(!date || !time){
+    showToast("Select date & time","error");
     return;
   }
 
-  await addDoc(collection(db, "tasks"), {
-    task,
-    date,
-    time,
-    priority,
-    status: "Pending",
-    reminded: false
+  await addDoc(collection(db,"tasks"),{
+    task,date,time,priority,
+    status:"Pending",
+    reminded:false
   });
 
-  // form clear
-  document.getElementById("taskInput").value = "";
-  document.getElementById("deadline").value = "";
-  document.getElementById("taskTime").value = "";
-  document.getElementById("priority").value = "Low";
+  showToast("Task Added ✅","success");
+
+  document.getElementById("taskInput").value="";
+  document.getElementById("deadline").value="";
+  document.getElementById("taskTime").value="";
 }
 
-//  REALTIME LOAD TASKS
-function loadTasks() {
+// 📥 REALTIME LOAD
+function loadTasks(){
 
   let table = document.getElementById("taskTable");
   let count = document.getElementById("taskCount");
 
-  onSnapshot(collection(db, "tasks"), (snapshot) => {
+  onSnapshot(collection(db,"tasks"),(snapshot)=>{
 
-    table.innerHTML = "";
-    tasks = [];
+    table.innerHTML="";
+    tasks=[];
 
-    snapshot.forEach((docSnap) => {
-      tasks.push({ id: docSnap.id, ...docSnap.data() });
+    snapshot.forEach(docSnap=>{
+      tasks.push({id:docSnap.id,...docSnap.data()});
     });
 
-    count.innerText = "Total Tasks: " + tasks.length;
+    count.innerText="Total Tasks: "+tasks.length;
 
-    tasks.forEach((t, i) => {
-
+    tasks.forEach((t,i)=>{
       let row = table.insertRow();
 
-      row.innerHTML = `
-<td>${i + 1}</td>
-<td class="${t.status === 'Completed' ? 'completed' : ''}">${t.task}</td>
-<td>${t.date} ${t.time}</td>
+      row.innerHTML=`
+<td>${i+1}</td>
+<td class="${t.status==='Completed'?'completed':''}">${t.task}</td>
+<td>${t.date} ${formatTime(t.time)}</td>
 <td class="${t.priority.toLowerCase()}">${t.priority}</td>
 <td id="timer-${i}">--</td>
 <td>
-<input type="checkbox" ${t.status === "Completed" ? "checked" : ""} onchange="toggleStatus('${t.id}')">
+<input type="checkbox" ${t.status==="Completed"?"checked":""} onchange="toggleStatus('${t.id}')">
 </td>
 <td>
 <button onclick="editTask('${t.id}')">Edit</button>
@@ -105,98 +134,89 @@ function loadTasks() {
   });
 }
 
-//  COUNTDOWN
-function updateCountdown() {
-  tasks.forEach((t, i) => {
-    let el = document.getElementById(`timer-${i}`);
-    if (!el) return;
+// ⏳ TIMER
+function updateCountdown(){
+  tasks.forEach((t,i)=>{
+    let el=document.getElementById(`timer-${i}`);
+    if(!el) return;
 
-    let now = new Date();
-    let deadline = new Date(`${t.date}T${t.time}`);
-    let diff = deadline - now;
+    let diff=new Date(`${t.date}T${t.time}`)-new Date();
 
-    if (diff <= 0) {
-      el.innerText = "Expired";
+    if(diff<=0){
+      el.innerText="Expired";
       return;
     }
 
-    let h = Math.floor(diff / 1000 / 60 / 60);
-    let m = Math.floor((diff / 1000 / 60) % 60);
+    let h=Math.floor(diff/1000/60/60);
+    let m=Math.floor((diff/1000/60)%60);
 
-    el.innerText = `${h}h ${m}m left`;
+    el.innerText=`${h}h ${m}m left`;
   });
 }
 
-//  REMINDER
-async function checkReminder() {
-  for (let t of tasks) {
-    let now = new Date();
-    let deadline = new Date(`${t.date}T${t.time}`);
-    let diff = deadline - now;
-    let mins = diff / 1000 / 60;
+// ⏰ REMINDER
+async function checkReminder(){
+  for(let t of tasks){
+    let diff=new Date(`${t.date}T${t.time}`)-new Date();
+    let mins=diff/1000/60;
 
-    if (mins <= 120 && mins > 0 && !t.reminded) {
-      alert(`Reminder: ${t.task} is due soon`);
+    if(mins<=120 && mins>0 && !t.reminded){
+      showToast(`${t.task} due soon 🔔`,"reminder");
 
-      await updateDoc(doc(db, "tasks", t.id), {
-        reminded: true
+      await updateDoc(doc(db,"tasks",t.id),{
+        reminded:true
       });
     }
   }
 }
 
-//  TOGGLE STATUS
-async function toggleStatus(id) {
-  let t = tasks.find(task => task.id === id);
+// 🔁 TOGGLE STATUS
+async function toggleStatus(id){
+  let t=tasks.find(x=>x.id===id);
 
-  let newStatus = t.status === "Pending" ? "Completed" : "Pending";
-
-  await updateDoc(doc(db, "tasks", id), {
-    status: newStatus
+  await updateDoc(doc(db,"tasks",id),{
+    status: t.status==="Pending"?"Completed":"Pending"
   });
 }
 
-//  DELETE
-async function deleteTask(id) {
-  await deleteDoc(doc(db, "tasks", id));
+// ❌ DELETE
+async function deleteTask(id){
+  await deleteDoc(doc(db,"tasks",id));
+  showToast("Task Deleted ❌","error");
 }
 
-//  EDIT
-async function editTask(id) {
-  let t = tasks.find(task => task.id === id);
+// ✏️ EDIT
+async function editTask(id){
+  let t=tasks.find(x=>x.id===id);
 
-  let newTask = prompt("Edit Task:", t.task);
-  if (newTask === null) return;
+  let newTask=prompt("Edit Task:",t.task);
+  if(!newTask) return;
 
-  let newDate = prompt("Edit Date:", t.date);
-  if (newDate === null) return;
+  let newTime=prompt("Edit Time (HH:MM):",t.time);
+  if(!newTime) return;
 
-  let newTime = prompt("Edit Time:", t.time);
-  if (newTime === null) return;
-
-  let newPriority = prompt("Edit Priority:", t.priority);
-  if (newPriority === null) return;
-
-  await updateDoc(doc(db, "tasks", id), {
-    task: newTask,
-    date: newDate,
-    time: newTime,
-    priority: newPriority
+  await updateDoc(doc(db,"tasks",id),{
+    task:newTask,
+    time:newTime
   });
+
+  showToast("Task Updated ✏️","success");
 }
 
-//  CLEAR ALL
-async function clearAll() {
-  const snapshot = await getDocs(collection(db, "tasks"));
+// 🧹 CLEAR ALL
+async function clearAll(){
+  const snapshot=await getDocs(collection(db,"tasks"));
 
-  for (let d of snapshot.docs) {
-    await deleteDoc(doc(db, "tasks", d.id));
+  for(let d of snapshot.docs){
+    await deleteDoc(doc(db,"tasks",d.id));
   }
+
+  showToast("All Tasks Cleared 🧹","error");
 }
 
-//  GLOBAL (buttons ke liye)
-window.addTask = addTask;
-window.clearAll = clearAll;
-window.deleteTask = deleteTask;
-window.editTask = editTask;
-window.toggleStatus = toggleStatus;
+// 🌐 GLOBAL
+window.addTask=addTask;
+window.clearAll=clearAll;
+window.deleteTask=deleteTask;
+window.editTask=editTask;
+window.toggleStatus=toggleStatus;
