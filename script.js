@@ -4,10 +4,11 @@ import {
   getFirestore,
   collection,
   addDoc,
-  getDocs,
   deleteDoc,
   doc,
-  updateDoc
+  updateDoc,
+  onSnapshot,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -31,7 +32,7 @@ window.onload = () => {
   setInterval(checkReminder, 60000);
 };
 
-//  ADD TASK
+// ➕ ADD TASK
 async function addTask() {
   let task = document.getElementById("taskInput").value;
   let date = document.getElementById("deadline").value;
@@ -57,35 +58,35 @@ async function addTask() {
     reminded: false
   });
 
-  loadTasks();
-
-  //  form auto clear
+  // form clear
   document.getElementById("taskInput").value = "";
   document.getElementById("deadline").value = "";
   document.getElementById("taskTime").value = "";
   document.getElementById("priority").value = "Low";
 }
 
-//  LOAD TASKS
-async function loadTasks() {
-  const snapshot = await getDocs(collection(db, "tasks"));
+//  REALTIME LOAD TASKS
+function loadTasks() {
 
   let table = document.getElementById("taskTable");
   let count = document.getElementById("taskCount");
 
-  table.innerHTML = "";
-  tasks = [];
+  onSnapshot(collection(db, "tasks"), (snapshot) => {
 
-  snapshot.forEach((docSnap) => {
-    tasks.push({ id: docSnap.id, ...docSnap.data() });
-  });
+    table.innerHTML = "";
+    tasks = [];
 
-  count.innerText = "Total Tasks: " + tasks.length;
+    snapshot.forEach((docSnap) => {
+      tasks.push({ id: docSnap.id, ...docSnap.data() });
+    });
 
-  tasks.forEach((t, i) => {
-    let row = table.insertRow();
+    count.innerText = "Total Tasks: " + tasks.length;
 
-    row.innerHTML = `
+    tasks.forEach((t, i) => {
+
+      let row = table.insertRow();
+
+      row.innerHTML = `
 <td>${i + 1}</td>
 <td class="${t.status === 'Completed' ? 'completed' : ''}">${t.task}</td>
 <td>${t.date} ${t.time}</td>
@@ -99,6 +100,8 @@ async function loadTasks() {
 <button onclick="deleteTask('${t.id}')">Delete</button>
 </td>
 `;
+    });
+
   });
 }
 
@@ -151,14 +154,11 @@ async function toggleStatus(id) {
   await updateDoc(doc(db, "tasks", id), {
     status: newStatus
   });
-
-  loadTasks();
 }
 
 //  DELETE
 async function deleteTask(id) {
   await deleteDoc(doc(db, "tasks", id));
-  loadTasks();
 }
 
 //  EDIT
@@ -183,8 +183,6 @@ async function editTask(id) {
     time: newTime,
     priority: newPriority
   });
-
-  loadTasks();
 }
 
 //  CLEAR ALL
@@ -194,11 +192,9 @@ async function clearAll() {
   for (let d of snapshot.docs) {
     await deleteDoc(doc(db, "tasks", d.id));
   }
-
-  loadTasks();
 }
 
-//  IMPORTANT (buttons ke liye global)
+//  GLOBAL (buttons ke liye)
 window.addTask = addTask;
 window.clearAll = clearAll;
 window.deleteTask = deleteTask;
