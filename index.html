@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Task Manager</title>
+
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,7 +12,6 @@
 
 <div class="container">
 
-<!-- 🌙 Dark Mode Button (small add only) -->
 <button class="dark-btn" onclick="toggleDarkMode()">🌙</button>
 
 <h1>📚 Student Task Manager</h1>
@@ -20,7 +20,7 @@
 <div class="input-box">
 
 <label for="taskInput">Task:</label>
-<input type="text" id="taskInput">
+<input type="text" id="taskInput" placeholder="Enter task">
 
 <label for="deadline">Deadline:</label>
 <input type="date" id="deadline">
@@ -52,12 +52,13 @@
 <th>Action</th>
 </tr>
 </thead>
+
 <tbody id="taskTable"></tbody>
 </table>
 
 </div>
 
-<!--  Toast -->
+<!-- Toast -->
 <div id="toastContainer"></div>
 
 <script type="module" src="script.js"></script>

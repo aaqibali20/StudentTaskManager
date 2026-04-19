@@ -1,4 +1,4 @@
-// 🔥 Toast
+// 🔥 TOAST
 function showToast(msg, type="success"){
   let box = document.getElementById("toastContainer");
 
@@ -8,10 +8,10 @@ function showToast(msg, type="success"){
 
   box.appendChild(div);
 
-  setTimeout(()=>div.remove(),10000); // 10 sec
+  setTimeout(()=>div.remove(),10000);
 }
 
-// 🌙 Dark Mode
+// 🌙 DARK MODE
 function toggleDarkMode(){
   document.body.classList.toggle("dark");
 }
@@ -20,18 +20,16 @@ window.toggleDarkMode = toggleDarkMode;
 // 🕒 TIME FORMAT (AM/PM)
 function formatTime(time){
   let [hour, minute] = time.split(":");
-
   hour = parseInt(hour);
 
   let ampm = hour >= 12 ? "PM" : "AM";
-  hour = hour % 12;
-  hour = hour ? hour : 12;
+  hour = hour % 12 || 12;
 
   return `${hour}:${minute} ${ampm}`;
 }
 
 
-// 🔥 Firebase Setup
+// 🔥 FIREBASE (⚠️ SAME OLD CONFIG USE KARNA)
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import {
   getFirestore,
@@ -72,7 +70,7 @@ async function addTask(){
   let time = document.getElementById("taskTime").value;
   let priority = document.getElementById("priority").value;
 
-  if(task===""){
+  if(!task){
     showToast("Enter task","error");
     return;
   }
@@ -119,11 +117,20 @@ function loadTasks(){
 <td>${i+1}</td>
 <td class="${t.status==='Completed'?'completed':''}">${t.task}</td>
 <td>${t.date} ${formatTime(t.time)}</td>
-<td class="${t.priority.toLowerCase()}">${t.priority}</td>
-<td id="timer-${i}">--</td>
+
 <td>
-<input type="checkbox" ${t.status==="Completed"?"checked":""} onchange="toggleStatus('${t.id}')">
+<span class="priority-badge priority-${t.priority.toLowerCase()}">
+${t.priority}
+</span>
 </td>
+
+<td id="timer-${i}">--</td>
+
+<td>
+<input type="checkbox" ${t.status==="Completed"?"checked":""}
+onchange="toggleStatus('${t.id}')">
+</td>
+
 <td>
 <button onclick="editTask('${t.id}')">Edit</button>
 <button onclick="deleteTask('${t.id}')">Delete</button>
@@ -185,26 +192,31 @@ async function deleteTask(id){
   showToast("Task Deleted ❌","error");
 }
 
-// ✏️ EDIT
+// ✏️ EDIT (FULL FIXED)
 async function editTask(id){
   let t=tasks.find(x=>x.id===id);
 
   let newTask=prompt("Edit Task:",t.task);
-  if(!newTask) return;
-
+  let newDate=prompt("Edit Date (YYYY-MM-DD):",t.date);
   let newTime=prompt("Edit Time (HH:MM):",t.time);
-  if(!newTime) return;
+  let newPriority=prompt("Edit Priority (Low/Medium/High):",t.priority);
+
+  if(!newTask || !newDate || !newTime || !newPriority) return;
 
   await updateDoc(doc(db,"tasks",id),{
     task:newTask,
-    time:newTime
+    date:newDate,
+    time:newTime,
+    priority:newPriority
   });
 
   showToast("Task Updated ✏️","success");
 }
 
-// 🧹 CLEAR ALL
+// 🧹 CLEAR (SAFE)
 async function clearAll(){
+  if(!confirm("Delete all tasks?")) return;
+
   const snapshot=await getDocs(collection(db,"tasks"));
 
   for(let d of snapshot.docs){

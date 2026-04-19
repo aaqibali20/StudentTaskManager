@@ -1,11 +1,10 @@
-/* 🌈 BODY BACKGROUND */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: "Times New Roman", serif;
   background: linear-gradient(135deg, #6dd5ed, #2193b0);
 }
 
-/* 📦 MAIN CONTAINER */
+/* CONTAINER */
 .container {
   width: 80%;
   margin: 50px auto;
@@ -16,17 +15,17 @@ body {
   position: relative;
 }
 
-/* 📝 INPUT SECTION */
+/* INPUT */
 .input-box {
   margin: 20px 0;
 }
 
 input, select {
-  padding: 5px;
+  padding: 6px;
   margin: 5px;
 }
 
-/* 🔘 BUTTONS */
+/* BUTTON */
 button {
   padding: 6px 12px;
   margin: 5px;
@@ -35,69 +34,54 @@ button {
   cursor: pointer;
 }
 
-/* 🔵 ADD BUTTON */
 button:first-of-type {
   background-color: #007bff;
   color: white;
 }
 
-/* 🔴 CLEAR BUTTON */
 .clear-btn {
   background-color: red;
   color: white;
 }
 
-/* 📊 TABLE */
+/* TABLE */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-th, td {
-  padding: 10px;
+th {
+  padding: 12px;
+  background: linear-gradient(45deg,#667eea,#764ba2);
+  color: white;
+}
+
+td {
+  padding: 12px;
   border: 1px solid #ccc;
 }
 
-th {
-  background-color: #ddd;
-}
-
-/* ✔ COMPLETED TASK */
+/* COMPLETED */
 .completed {
   text-decoration: line-through;
   color: gray;
 }
 
-/* 🎯 PRIORITY COLORS */
-.high {
-  color: red;
+/* 🔥 PRIORITY BADGE */
+.priority-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
   font-weight: bold;
 }
 
-.medium {
-  color: orange;
-  font-weight: bold;
-}
+.priority-low { background: #28a745; }
+.priority-medium { background: #f39c12; }
+.priority-high { background: #e74c3c; }
 
-.low {
-  color: green;
-  font-weight: bold;
-}
-
-/* 🌙 DARK MODE BUTTON */
-.dark-btn {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  border: none;
-  padding: 8px;
-  border-radius: 10px;
-  cursor: pointer;
-  background: #ddd;
-}
-
-/* 🌙 DARK MODE */
+/* DARK MODE */
 .dark {
   background: #121212;
   color: white;
@@ -105,10 +89,6 @@ th {
 
 .dark .container {
   background: #1e1e1e;
-}
-
-.dark table {
-  color: white;
 }
 
 .dark th {
@@ -119,43 +99,29 @@ th {
   border-color: #555;
 }
 
-/* 🔥 TOAST NOTIFICATIONS */
+/* DARK BUTTON */
+.dark-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background: #ddd;
+}
+
+/* TOAST */
 #toastContainer {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 999;
 }
 
 .toast {
   margin-top: 10px;
   padding: 12px;
   border-radius: 8px;
-  color: #333;
   background: white;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  animation: slideIn 0.3s ease;
 }
 
-/* TYPES */
-.toast.success {
-  border-left: 5px solid green;
-}
-
-.toast.error {
-  border-left: 5px solid red;
-}
-
-.toast.reminder {
-  border-left: 5px solid orange;
-}
-
-/* 🎬 ANIMATION */
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
+.toast.success { border-left: 5px solid green; }
+.toast.error { border-left: 5px solid red; }
+.toast.reminder { border-left: 5px solid orange; }
