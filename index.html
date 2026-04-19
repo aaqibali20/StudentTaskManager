@@ -1,77 +1,62 @@
-<script type="module">
-  //  Firebase imports
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-  import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    onSnapshot, 
-    deleteDoc, 
-    doc 
-  } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Task Manager</title>
+<link rel="stylesheet" href="style.css">
+</head>
 
-  //  Your Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyCX5eXQ3Y6sr92XLrnWjOvdotfncXB_pcI",
-    authDomain: "student-task-manager-89635.firebaseapp.com",
-    projectId: "student-task-manager-89635",
-    storageBucket: "student-task-manager-89635.firebasestorage.app",
-    messagingSenderId: "1017924790163",
-    appId: "1:1017924790163:web:2fd95b7a407e766402ea66"
-  };
+<body>
 
-  //  Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+<div class="container">
 
-  //  Elements
-  const input = document.getElementById("taskInput");
-  const btn = document.getElementById("addBtn");
-  const taskList = document.getElementById("taskList");
+<h1>📚 Student Task Manager</h1>
+<h3 id="taskCount">Total Tasks: 0</h3>
 
-  // ➕ Add Task
-  async function addTask(text) {
-    await addDoc(collection(db, "tasks"), {
-      text: text,
-      createdAt: Date.now()
-    });
-  }
+<div class="input-box">
 
-  //  Delete Task
-  async function deleteTask(id) {
-    await deleteDoc(doc(db, "tasks", id));
-  }
+<label for="taskInput">Task:</label>
+<input type="text" id="taskInput">
 
-  //  Button click
-  btn.addEventListener("click", () => {
-    const value = input.value.trim();
-    if (value !== "") {
-      addTask(value);
-      input.value = "";
-    }
-  });
+<label for="deadline">Deadline:</label>
+<input type="date" id="deadline">
 
-  //  REAL-TIME LISTENER (MAIN MAGIC)
-  onSnapshot(collection(db, "tasks"), (snapshot) => {
-    taskList.innerHTML = "";
+<label for="taskTime">Time:</label>
+<input type="time" id="taskTime">
 
-    snapshot.forEach((docItem) => {
-      const li = document.createElement("li");
+<label for="priority">Priority:</label>
+<select id="priority">
+<option value="Low">Low</option>
+<option value="Medium">Medium</option>
+<option value="High">High</option>
+</select>
 
-      // text
-      li.textContent = docItem.data().text;
+<button onclick="addTask()">Add Task</button>
+<button onclick="clearAll()" class="clear-btn">Clear All</button>
 
-      // delete button
-      const delBtn = document.createElement("button");
-      delBtn.textContent = "❌";
-      delBtn.style.marginLeft = "10px";
+</div>
 
-      delBtn.addEventListener("click", () => {
-        deleteTask(docItem.id);
-      });
+<table>
 
-      li.appendChild(delBtn);
-      taskList.appendChild(li);
-    });
-  });
-</script>
+<thead>
+<tr>
+<th>No.</th>
+<th>Task</th>
+<th>Deadline</th>
+<th>Priority</th>
+<th>Countdown</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="taskTable"></tbody>
+
+</table>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
