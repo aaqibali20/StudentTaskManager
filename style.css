@@ -42,28 +42,16 @@ th,td{
 }
 
 /* Priority Colors */
-.high{
-    color:red;
-    font-weight:bold;
-}
+.high{ color:red; font-weight:bold; }
+.medium{ color:orange; font-weight:bold; }
+.low{ color:green; font-weight:bold; }
 
-.medium{
-    color:orange;
-    font-weight:bold;
-}
-
-.low{
-    color:green;
-    font-weight:bold;
-}
-
-/* Completed */
 .completed{
     text-decoration: line-through;
     color:gray;
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width:768px){
 .container{ width:90%; }
 input, select, button{ width:100%; }
@@ -71,7 +59,6 @@ input, select, button{ width:100%; }
 
 @media (max-width:480px){
 .container{ width:95%; }
-
 table{
     display:block;
     overflow-x:auto;
