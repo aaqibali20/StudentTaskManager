@@ -10,25 +10,50 @@
 
 <body>
 
+<!-- 🔐 LOGIN -->
+<div id="authBox" class="container">
+
+<h2>Login / Register</h2>
+
+<input type="email" id="email" placeholder="Enter Email">
+<input type="password" id="password" placeholder="Enter Password">
+
+<br>
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+
+</div>
+
+<!-- 📚 APP -->
+<div id="appBox" style="display:none;">
+
 <div class="container">
 
-<button class="dark-btn" onclick="toggleDarkMode()">🌙</button>
+<!-- 🔥 TOP BAR -->
+<div class="top-bar">
+  <div id="userEmail"></div>
+
+  <div class="top-buttons">
+    <!-- ❌ DARK BUTTON REMOVED -->
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</div>
 
 <h1>📚 Student Task Manager</h1>
 <h3 id="taskCount">Total Tasks: 0</h3>
 
 <div class="input-box">
 
-<label for="taskInput">Task:</label>
-<input type="text" id="taskInput" placeholder="Enter task">
+<label>Task:</label>
+<input type="text" id="taskInput">
 
-<label for="deadline">Deadline:</label>
+<label>Deadline:</label>
 <input type="date" id="deadline">
 
-<label for="taskTime">Time:</label>
+<label>Time:</label>
 <input type="time" id="taskTime">
 
-<label for="priority">Priority:</label>
+<label>Priority:</label>
 <select id="priority">
 <option value="Low">Low</option>
 <option value="Medium">Medium</option>
@@ -57,8 +82,8 @@
 </table>
 
 </div>
+</div>
 
-<!-- Toast -->
 <div id="toastContainer"></div>
 
 <script type="module" src="script.js"></script>

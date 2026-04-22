@@ -7,17 +7,10 @@ function showToast(msg, type="success"){
   div.innerText = msg;
 
   box.appendChild(div);
-
-  setTimeout(()=>div.remove(),10000);
+  setTimeout(()=>div.remove(),4000);
 }
 
-// 🌙 DARK MODE
-function toggleDarkMode(){
-  document.body.classList.toggle("dark");
-}
-window.toggleDarkMode = toggleDarkMode;
-
-// 🕒 TIME FORMAT (AM/PM)
+// 🕒 TIME FORMAT
 function formatTime(time){
   let [hour, minute] = time.split(":");
   hour = parseInt(hour);
@@ -28,9 +21,9 @@ function formatTime(time){
   return `${hour}:${minute} ${ampm}`;
 }
 
-
-// 🔥 FIREBASE (⚠️ SAME OLD CONFIG USE KARNA)
+// 🔥 FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+
 import {
   getFirestore,
   collection,
@@ -39,32 +32,116 @@ import {
   doc,
   updateDoc,
   onSnapshot,
-  getDocs
+  getDocs,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA27U7UomdZCWF0T4e2gkkGc5mIq_EfJA4",
   authDomain: "student-task-manager-3841f.firebaseapp.com",
   projectId: "student-task-manager-3841f",
-  storageBucket: "student-task-manager-3841f.firebasestorage.app",
+  storageBucket: "student-task-manager-3841f.appspot.com",
   messagingSenderId: "871860364670",
   appId: "1:871860364670:web:d1ba0e3876949df9aa3f2f"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 let tasks = [];
+let currentUser = null;
+let unsubscribe = null;
+let userDocId = null;
 
 // 🚀 LOAD
 window.onload = () => {
-  loadTasks();
   setInterval(updateCountdown,1000);
   setInterval(checkReminder,60000);
 };
 
+// 🔐 AUTH STATE
+onAuthStateChanged(auth, async (user)=>{
+  if(user){
+    currentUser = user;
+
+    userDocId = user.email.replace(/\./g,"_");
+
+    document.getElementById("authBox").style.display="none";
+    document.getElementById("appBox").style.display="block";
+
+    document.getElementById("userEmail").innerText = "👤 " + user.email;
+
+    await setDoc(doc(db,"users",userDocId),{
+      email:user.email
+    },{merge:true});
+
+    loadTasks();
+
+  }else{
+    document.getElementById("authBox").style.display="block";
+    document.getElementById("appBox").style.display="none";
+  }
+});
+
+// 📝 REGISTER
+async function register(){
+  let email=document.getElementById("email").value;
+  let pass=document.getElementById("password").value;
+
+  if(!email || !pass){
+    showToast("Fill all fields","error");
+    return;
+  }
+
+  try{
+    await createUserWithEmailAndPassword(auth,email,pass);
+    showToast("Registered ✅");
+  }catch(e){
+    showToast(e.message,"error");
+  }
+}
+
+// 🔓 LOGIN
+async function login(){
+  let email=document.getElementById("email").value;
+  let pass=document.getElementById("password").value;
+
+  if(!email || !pass){
+    showToast("Fill all fields","error");
+    return;
+  }
+
+  try{
+    await signInWithEmailAndPassword(auth,email,pass);
+    showToast("Login Success ✅");
+  }catch(e){
+    showToast(e.message,"error");
+  }
+}
+
+// 🚪 LOGOUT
+async function logout(){
+  await signOut(auth);
+  showToast("Logged out");
+}
+
 // ➕ ADD TASK
 async function addTask(){
+
+  if(!currentUser){
+    showToast("Login first","error");
+    return;
+  }
+
   let task = document.getElementById("taskInput").value;
   let date = document.getElementById("deadline").value;
   let time = document.getElementById("taskTime").value;
@@ -80,40 +157,53 @@ async function addTask(){
     return;
   }
 
-  await addDoc(collection(db,"tasks"),{
-    task,date,time,priority,
-    status:"Pending",
-    reminded:false
-  });
+  try{
+    await addDoc(collection(db,"users",userDocId,"tasks"),{
+      task,date,time,priority,
+      status:"Pending",
+      reminded:false
+    });
 
-  showToast("Task Added ✅","success");
+    showToast("Task Added ✅");
 
-  document.getElementById("taskInput").value="";
-  document.getElementById("deadline").value="";
-  document.getElementById("taskTime").value="";
+    document.getElementById("taskInput").value="";
+    document.getElementById("deadline").value="";
+    document.getElementById("taskTime").value="";
+
+  }catch(e){
+    showToast("Error: " + e.message,"error");
+  }
 }
 
-// 📥 REALTIME LOAD
+// 📥 LOAD TASKS
 function loadTasks(){
+
+  if(!currentUser) return;
 
   let table = document.getElementById("taskTable");
   let count = document.getElementById("taskCount");
 
-  onSnapshot(collection(db,"tasks"),(snapshot)=>{
+  if(unsubscribe){
+    unsubscribe();
+  }
 
-    table.innerHTML="";
-    tasks=[];
+  unsubscribe = onSnapshot(
+    collection(db,"users",userDocId,"tasks"),
+    (snapshot)=>{
 
-    snapshot.forEach(docSnap=>{
-      tasks.push({id:docSnap.id,...docSnap.data()});
-    });
+      table.innerHTML="";
+      tasks=[];
 
-    count.innerText="Total Tasks: "+tasks.length;
+      snapshot.forEach(docSnap=>{
+        tasks.push({id:docSnap.id,...docSnap.data()});
+      });
 
-    tasks.forEach((t,i)=>{
-      let row = table.insertRow();
+      count.innerText="Total Tasks: "+tasks.length;
 
-      row.innerHTML=`
+      tasks.forEach((t,i)=>{
+        let row = table.insertRow();
+
+        row.innerHTML=`
 <td>${i+1}</td>
 <td class="${t.status==='Completed'?'completed':''}">${t.task}</td>
 <td>${t.date} ${formatTime(t.time)}</td>
@@ -133,12 +223,13 @@ onchange="toggleStatus('${t.id}')">
 
 <td>
 <button onclick="editTask('${t.id}')">Edit</button>
-<button onclick="deleteTask('${t.id}')">Delete</button>
+<button class="delete-btn" onclick="deleteTask('${t.id}')">Delete</button>
 </td>
 `;
-    });
+      });
 
-  });
+    }
+  );
 }
 
 // ⏳ TIMER
@@ -168,62 +259,62 @@ async function checkReminder(){
     let mins=diff/1000/60;
 
     if(mins<=120 && mins>0 && !t.reminded){
-      showToast(`${t.task} due soon 🔔`,"reminder");
+      showToast(`${t.task} due soon 🔔`);
 
-      await updateDoc(doc(db,"tasks",t.id),{
+      await updateDoc(doc(db,"users",userDocId,"tasks",t.id),{
         reminded:true
       });
     }
   }
 }
 
-// 🔁 TOGGLE STATUS
+// 🔁 STATUS
 async function toggleStatus(id){
   let t=tasks.find(x=>x.id===id);
 
-  await updateDoc(doc(db,"tasks",id),{
+  await updateDoc(doc(db,"users",userDocId,"tasks",id),{
     status: t.status==="Pending"?"Completed":"Pending"
   });
 }
 
 // ❌ DELETE
 async function deleteTask(id){
-  await deleteDoc(doc(db,"tasks",id));
-  showToast("Task Deleted ❌","error");
+  await deleteDoc(doc(db,"users",userDocId,"tasks",id));
+  showToast("Task Deleted ❌");
 }
 
-// ✏️ EDIT (FULL FIXED)
+// ✏️ EDIT
 async function editTask(id){
   let t=tasks.find(x=>x.id===id);
 
   let newTask=prompt("Edit Task:",t.task);
-  let newDate=prompt("Edit Date (YYYY-MM-DD):",t.date);
-  let newTime=prompt("Edit Time (HH:MM):",t.time);
-  let newPriority=prompt("Edit Priority (Low/Medium/High):",t.priority);
+  let newDate=prompt("Edit Date:",t.date);
+  let newTime=prompt("Edit Time:",t.time);
+  let newPriority=prompt("Edit Priority:",t.priority);
 
   if(!newTask || !newDate || !newTime || !newPriority) return;
 
-  await updateDoc(doc(db,"tasks",id),{
+  await updateDoc(doc(db,"users",userDocId,"tasks",id),{
     task:newTask,
     date:newDate,
     time:newTime,
     priority:newPriority
   });
 
-  showToast("Task Updated ✏️","success");
+  showToast("Task Updated ✏️");
 }
 
-// 🧹 CLEAR (SAFE)
+// 🧹 CLEAR ALL
 async function clearAll(){
   if(!confirm("Delete all tasks?")) return;
 
-  const snapshot=await getDocs(collection(db,"tasks"));
+  const snapshot=await getDocs(collection(db,"users",userDocId,"tasks"));
 
   for(let d of snapshot.docs){
-    await deleteDoc(doc(db,"tasks",d.id));
+    await deleteDoc(doc(db,"users",userDocId,"tasks",d.id));
   }
 
-  showToast("All Tasks Cleared 🧹","error");
+  showToast("All Tasks Cleared 🧹");
 }
 
 // 🌐 GLOBAL
@@ -232,3 +323,6 @@ window.clearAll=clearAll;
 window.deleteTask=deleteTask;
 window.editTask=editTask;
 window.toggleStatus=toggleStatus;
+window.register=register;
+window.login=login;
+window.logout=logout;
