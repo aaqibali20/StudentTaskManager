@@ -1,4 +1,4 @@
-// 🔥 TOAST
+//  TOAST
 function showToast(msg, type="success"){
   let box = document.getElementById("toastContainer");
 
@@ -10,7 +10,7 @@ function showToast(msg, type="success"){
   setTimeout(()=>div.remove(),4000);
 }
 
-// 🕒 TIME FORMAT
+//  TIME FORMAT
 function formatTime(time){
   let [hour, minute] = time.split(":");
   hour = parseInt(hour);
@@ -21,7 +21,7 @@ function formatTime(time){
   return `${hour}:${minute} ${ampm}`;
 }
 
-// 🔥 FIREBASE
+//  FIREBASE
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 
 import {
@@ -62,13 +62,13 @@ let currentUser = null;
 let unsubscribe = null;
 let userDocId = null;
 
-// 🚀 LOAD
+//  LOAD
 window.onload = () => {
   setInterval(updateCountdown,1000);
   setInterval(checkReminder,60000);
 };
 
-// 🔐 AUTH STATE
+//  AUTH STATE
 onAuthStateChanged(auth, async (user)=>{
   if(user){
     currentUser = user;
@@ -92,7 +92,7 @@ onAuthStateChanged(auth, async (user)=>{
   }
 });
 
-// 📝 REGISTER
+//  REGISTER
 async function register(){
   let email=document.getElementById("email").value;
   let pass=document.getElementById("password").value;
@@ -110,7 +110,7 @@ async function register(){
   }
 }
 
-// 🔓 LOGIN
+//  LOGIN
 async function login(){
   let email=document.getElementById("email").value;
   let pass=document.getElementById("password").value;
@@ -128,13 +128,13 @@ async function login(){
   }
 }
 
-// 🚪 LOGOUT
+//  LOGOUT
 async function logout(){
   await signOut(auth);
   showToast("Logged out");
 }
 
-// ➕ ADD TASK
+//  ADD TASK
 async function addTask(){
 
   if(!currentUser){
@@ -175,7 +175,7 @@ async function addTask(){
   }
 }
 
-// 📥 LOAD TASKS
+//  LOAD TASKS
 function loadTasks(){
 
   if(!currentUser) return;
@@ -232,7 +232,7 @@ onchange="toggleStatus('${t.id}')">
   );
 }
 
-// ⏳ TIMER
+//  TIMER
 function updateCountdown(){
   tasks.forEach((t,i)=>{
     let el=document.getElementById(`timer-${i}`);
@@ -252,7 +252,7 @@ function updateCountdown(){
   });
 }
 
-// ⏰ REMINDER
+//  REMINDER
 async function checkReminder(){
   for(let t of tasks){
     let diff=new Date(`${t.date}T${t.time}`)-new Date();
@@ -268,7 +268,7 @@ async function checkReminder(){
   }
 }
 
-// 🔁 STATUS
+//  STATUS
 async function toggleStatus(id){
   let t=tasks.find(x=>x.id===id);
 
@@ -277,13 +277,13 @@ async function toggleStatus(id){
   });
 }
 
-// ❌ DELETE
+//  DELETE
 async function deleteTask(id){
   await deleteDoc(doc(db,"users",userDocId,"tasks",id));
   showToast("Task Deleted ❌");
 }
 
-// ✏️ EDIT
+//  EDIT
 async function editTask(id){
   let t=tasks.find(x=>x.id===id);
 
@@ -304,7 +304,7 @@ async function editTask(id){
   showToast("Task Updated ✏️");
 }
 
-// 🧹 CLEAR ALL
+//  CLEAR ALL
 async function clearAll(){
   if(!confirm("Delete all tasks?")) return;
 
@@ -317,7 +317,7 @@ async function clearAll(){
   showToast("All Tasks Cleared 🧹");
 }
 
-// 🌐 GLOBAL
+//  GLOBAL
 window.addTask=addTask;
 window.clearAll=clearAll;
 window.deleteTask=deleteTask;

@@ -11,7 +11,10 @@ body {
   padding: 25px;
   border-radius: 15px;
   background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px); /* Safari */
+  backdrop-filter: blur(10px);         /* Standard */
+
   text-align: center;
 }
 
@@ -93,7 +96,7 @@ td {
 }
 
 .priority-low { background: green; }
-.priority-medium { background: orange; }
+.priority-medium { background: orange; } /* ✅ fixed */
 .priority-high { background: red; }
 
 #toastContainer {
